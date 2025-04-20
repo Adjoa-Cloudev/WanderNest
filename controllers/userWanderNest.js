@@ -1,5 +1,7 @@
 import bcrypt from 'bcrypt';
 import User from '../models/userModels.js';
+import jwt from 'jsonwebtoken';
+
 import { validateTouristRegistration, validateTourOperatorRegistration } from '../validators/userWanderNest.js';
 
 const registerTourist = async (req, res) => {
@@ -68,4 +70,39 @@ const registerTourOperator = async (req, res) => {
   }
 };
 
-export { registerTourist, registerTourOperator };
+const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find user by email
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).send('Invalid email or password.');
+
+    // Compare passwords
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(400).send('Invalid email or password.');
+
+    // Generate token
+    const token = jwt.sign(
+      { id: user._id, userType: user.userType },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+
+    res.status(200).json({
+      message: 'Login successful',
+      token,
+      user: {
+        id: user._id,
+        userType: user.userType,
+        email: user.email,
+        userName: user.userName,
+      },
+    });
+  } catch (err) {
+    res.status(500).send('Login error: ' + err.message);
+  }
+};
+
+
+export { registerTourist, registerTourOperator, loginUser };

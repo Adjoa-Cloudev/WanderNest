@@ -7,8 +7,9 @@ export const validateTouristRegistration = (data) => {
     email: Joi.string().email().required(),
     phoneNumber: Joi.string().min(10).required(),
     password: Joi.string().min(6).required(),
+    confirmPassword: Joi.ref('password'),
     profilePicture: Joi.string().optional()
-  });
+  }).with('password', 'confirmPassword');
   return schema.validate(data);
 };
 
@@ -21,7 +22,8 @@ export const validateTourOperatorRegistration = (data) => {
     profilePicture: Joi.string().optional(),
     userName: Joi.string().min(3).required(),
     email: Joi.string().email().required(),
-    password: Joi.string().min(6).required()
-  });
+    password: Joi.string().min(6).required(),
+    confirmPassword: Joi.ref('password'),
+  }).with('password', 'confirmPassword');
   return schema.validate(data);
 };
