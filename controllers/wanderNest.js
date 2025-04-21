@@ -1,5 +1,5 @@
 import Tour from '../models/wanderNestApp.js';
-import { validateNewTour, validateUpdateTour } from '../validators/wanderNestApp.js';
+import { validateNewTour, validateUpdateTour } from '../validators/wanderNestapp.js';
 
 export const createTour = async (req, res) => {
     try {
