@@ -22,7 +22,7 @@ export const validateUpdateTour = (data) => {
     description: Joi.string(),
     availableSlots: Joi.number(),
     date: Joi.date(),
-    images: Joi.string().uri(),  // Changed to a single image URL
+    images: Joi.string().uri(),  
     status: Joi.string().valid('available', 'unavailable')
   });
   return schema.validate(data);
