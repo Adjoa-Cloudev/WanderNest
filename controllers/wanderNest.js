@@ -19,42 +19,38 @@ export const createTour = async (req, res) => {
     });
 
     await tour.save();
-
-    console.log("Created Tour Object:", JSON.stringify(tour, null, 2)); 
-
-    // Respond with the tour data in JSON format
-    res.status(201).json({ message: 'Tour created successfully', tour: JSON.parse(JSON.stringify(tour)) });
+    // Ensure you send the object properly as a JSON response
+    return res.status(201).json({ message: 'Tour created successfully', tour });
 
   } catch (err) {
-    console.error("Error in createTour:", err); // Log any errors
-    res.status(500).json({ message: 'Server error: ' + err.message });
+    return res.status(500).json({ message: 'Server error: ' + err.message });
   }
 };
 
-  export const updateTour = async (req, res) => {
-    try {
-      const { id } = req.params;
-  
-      const { error } = validateUpdateTour(req.body);
-      if (error) return res.status(400).json({ message: error.details[0].message });
-  
-      const tour = await Tour.findOne({ _id: id, operator: req.auth.id });
-      if (!tour) return res.status(404).json({ message: 'Tour not found or unauthorized' });
-  
-      if (req.file) {
-        req.body.image = req.file.path; 
-      }
-  
-      Object.assign(tour, req.body); 
-      await tour.save();
-  
-      res.status(200).json({ message: 'Tour updated successfully', tour });
-    } catch (err) {
-      res.status(500).json({ message: 'Server error: ' + err.message });
+export const updateTour = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { error } = validateUpdateTour(req.body);
+    if (error) return res.status(400).json({ message: error.details[0].message });
+
+    const tour = await Tour.findOne({ _id: id, operator: req.auth.id });
+    if (!tour) return res.status(404).json({ message: 'Tour not found or unauthorized' });
+
+    if (req.file) {
+      req.body.image = req.file.path; // Make sure you are using 'image' instead of 'images'
     }
-  };
-  
-  
+
+    Object.assign(tour, req.body); 
+    await tour.save();
+
+    // Ensure proper response formatting
+    return res.status(200).json({ message: 'Tour updated successfully', tour });
+
+  } catch (err) {
+    return res.status(500).json({ message: 'Server error: ' + err.message });
+  }
+};
 
 // Get tours for current tour operator
 export const getOperatorTours = async (req, res) => {
