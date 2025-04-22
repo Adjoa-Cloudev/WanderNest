@@ -2,8 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
-import userRoutes from './routes/userWanderNest.js';  // User routes
-import tourRoutes from './routes/wanderNestRoute.js';  // Tour routes
+import userRoutes from './routes/userWanderNest.js';  
+import tourRoutes from './routes/wanderNestRoute.js';  
 
 dotenv.config();
 
@@ -16,9 +16,9 @@ mongoose
   .then(() => console.log('Connected to MongoDB...'))
   .catch((err) => console.error('Could not connect to MongoDB:', err.message));
 
-// API Base URL will be /api
-app.use('/api/users', userRoutes);  // User-related routes like register, login
-app.use('/api/tours', tourRoutes);  // Tour-related routes like creating, viewing tours
+
+app.use('/api/users', userRoutes);  
+app.use('/api/tours', tourRoutes);  
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

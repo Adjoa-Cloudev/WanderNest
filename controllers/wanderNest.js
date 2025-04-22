@@ -2,30 +2,35 @@ import Tour from '../models/wanderNestApp.js';
 import { validateNewTour, validateUpdateTour } from '../validators/wanderNestapp.js';
 
 export const createTour = async (req, res) => {
-    try {
-      
-      const imageUrl = req.file?.path;
-      if (!imageUrl) {
-        return res.status(400).json({ message: 'An image is required.' });
-      }
-  
-      req.body.image = imageUrl;
-  
-      const { error } = validateNewTour(req.body);
-      if (error) return res.status(400).json({ message: error.details[0].message });
-  
-      const tour = new Tour({
-        ...req.body,
-        operator: req.auth.id
-      });
-  
-      await tour.save();
-      res.status(201).json({ message: 'Tour created successfully', tour });
-    } catch (err) {
-      res.status(500).json({ message: 'Server error: ' + err.message });
+  try {
+    const imageUrl = req.file?.path;
+    if (!imageUrl) {
+      return res.status(400).json({ message: 'An image is required.' });
     }
-  };
-  
+
+    req.body.image = imageUrl;
+
+    const { error } = validateNewTour(req.body);
+    if (error) return res.status(400).json({ message: error.details[0].message });
+
+    const tour = new Tour({
+      ...req.body,
+      operator: req.auth.id
+    });
+
+    await tour.save();
+
+    console.log("Created Tour Object:", JSON.stringify(tour, null, 2)); 
+
+    // Respond with the tour data in JSON format
+    res.status(201).json({ message: 'Tour created successfully', tour: JSON.parse(JSON.stringify(tour)) });
+
+  } catch (err) {
+    console.error("Error in createTour:", err); // Log any errors
+    res.status(500).json({ message: 'Server error: ' + err.message });
+  }
+};
+
   export const updateTour = async (req, res) => {
     try {
       const { id } = req.params;

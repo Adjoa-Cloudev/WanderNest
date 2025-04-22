@@ -8,7 +8,7 @@ export const validateNewTour = (data) => {
     description: Joi.string().required(),
     availableSlots: Joi.number().required(),
     date: Joi.date().required(),
-    image: Joi.string().uri().required(),  // Changed to a single image URL
+    image: Joi.string().uri().required(),  
     status: Joi.string().valid('available', 'unavailable')
   });
   return schema.validate(data);

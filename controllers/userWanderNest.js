@@ -11,14 +11,14 @@ const registerTourist = async (req, res) => {
 
     const { fullName, userName, email, phoneNumber, password, profilePicture } = req.body;
 
-    // Check if the user already exists
+
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).send('User already exists.');
 
-    // Hash password
+ 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create a new tourist user
+   
     const user = new User({
       userType: 'tourist',
       fullName,
@@ -43,14 +43,14 @@ const registerTourOperator = async (req, res) => {
 
     const { businessName, location, servicesDescription, rateCard, userName, email, password, profilePicture } = req.body;
 
-    // Check if the user already exists
+    //  if the user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).send('User already exists.');
 
-    // Hash password
+  
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create a new tour operator user
+    
     const user = new User({
       userType: 'tour_operator',
       businessName,
