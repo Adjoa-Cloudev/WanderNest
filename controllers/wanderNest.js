@@ -1,42 +1,44 @@
 import Tour from '../models/wanderNestApp.js';
 import { validateNewTour, validateUpdateTour } from '../validators/wanderNestapp.js';
 
+import Tour from '../models/wanderNestApp.js';
+import { validateNewTour } from '../validators/wanderNestapp.js';
+
 export const createTour = async (req, res) => {
   try {
-    console.log('Auth Info:', req.auth);
-    console.log('Incoming Body:', req.body);
-    console.log('Uploaded File:', req.file);
-
     const imageUrl = req.file?.path;
+
     if (!imageUrl) {
-      console.log('Image missing from request');
       return res.status(400).json({ message: 'An image is required.' });
     }
 
     req.body.image = imageUrl;
 
     const { error } = validateNewTour(req.body);
-    if (error) {
-      console.log('Validation Error:', error.details[0].message);
-      return res.status(400).json({ message: error.details[0].message });
-    }
+    if (error) return res.status(400).json({ message: error.details[0].message });
 
     const tour = new Tour({
       ...req.body,
-      operator: req.auth?.id || 'Missing Auth ID',
+      operator: req.auth.id
     });
 
     await tour.save();
 
-    console.log('Tour saved:', tour);
-
+    // Responding with tour object
     return res.status(201).json({ message: 'Tour created successfully', tour });
 
   } catch (err) {
-    console.error('Internal Server Error:', err);
-    return res.status(500).json({ message: 'Server error: ' + err.message });
+    // Log the full error for debugging
+    console.error('Error creating tour:', err);
+
+    // Return a more detailed error message in the response
+    return res.status(500).json({
+      message: 'Server error, unable to create tour.',
+      error: err.message || err
+    });
   }
 };
+
 
 export const updateTour = async (req, res) => {
   try {
