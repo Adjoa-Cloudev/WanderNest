@@ -37,7 +37,7 @@ export const createTour = async (req, res) => {
       if (!tour) return res.status(404).json({ message: 'Tour not found or unauthorized' });
   
       if (req.file) {
-        req.body.image = req.file.path; // Fixed line here
+        req.body.image = req.file.path; 
       }
   
       Object.assign(tour, req.body); 
