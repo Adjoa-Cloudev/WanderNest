@@ -22,6 +22,7 @@ export const createTour = async (req, res) => {
     // Ensure you send the object properly as a JSON response
     return res.status(201).json({ message: 'Tour created successfully', tour });
 
+
   } catch (err) {
     return res.status(500).json({ message: 'Server error: ' + err.message });
   }
