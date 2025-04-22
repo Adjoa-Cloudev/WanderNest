@@ -24,4 +24,18 @@ const upload = multer({
   limits: { files: 1 }, 
 }).single('image'); 
 
+
+upload.uploadFile = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+    console.log('File uploaded successfully:', req.file);
+    next();
+  } catch (err) {
+    console.error('Error uploading file:', err);
+    return res.status(500).json({ message: 'Error uploading file' });
+  }
+};
+
 export default upload;
