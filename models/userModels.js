@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
   },
   profilePicture: {
     type: String,
-    required: false // optional for both types
+    required: false 
   },
   businessName: {
     type: String,

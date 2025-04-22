@@ -36,9 +36,8 @@ export const createTour = async (req, res) => {
       const tour = await Tour.findOne({ _id: id, operator: req.auth.id });
       if (!tour) return res.status(404).json({ message: 'Tour not found or unauthorized' });
   
-      
       if (req.file) {
-        req.body.images = req.file.path;
+        req.body.image = req.file.path; // Fixed line here
       }
   
       Object.assign(tour, req.body); 
@@ -49,6 +48,7 @@ export const createTour = async (req, res) => {
       res.status(500).json({ message: 'Server error: ' + err.message });
     }
   };
+  
   
 
 // Get tours for current tour operator

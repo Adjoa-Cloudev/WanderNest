@@ -11,13 +11,13 @@ import {
 
 const router = express.Router();
 
-// Only tour operators can create and update tours
+
 router.post('/', isAuthenticated, isAuthorized(['tour_operator']), upload, createTour);
 
 router.patch('/:id', isAuthenticated, isAuthorized(['tour_operator']), updateTour);  
-router.get('/my-tours', isAuthenticated, isAuthorized(['tour_operator']), getOperatorTours);  // GET /api/tours/my-tours (get operator's tours)
+router.get('/my-tours', isAuthenticated, isAuthorized(['tour_operator']), getOperatorTours);  
 
-// Anyone (tourist) can see all tours
-router.get('/', getAllTours);  // GET /api/tours (view all tours)
+// see all tours
+router.get('/', getAllTours);  
 
 export default router;
