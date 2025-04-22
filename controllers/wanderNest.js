@@ -3,27 +3,37 @@ import { validateNewTour, validateUpdateTour } from '../validators/wanderNestapp
 
 export const createTour = async (req, res) => {
   try {
+    console.log('Auth Info:', req.auth);
+    console.log('Incoming Body:', req.body);
+    console.log('Uploaded File:', req.file);
+
     const imageUrl = req.file?.path;
     if (!imageUrl) {
+      console.log('Image missing from request');
       return res.status(400).json({ message: 'An image is required.' });
     }
 
     req.body.image = imageUrl;
 
     const { error } = validateNewTour(req.body);
-    if (error) return res.status(400).json({ message: error.details[0].message });
+    if (error) {
+      console.log('Validation Error:', error.details[0].message);
+      return res.status(400).json({ message: error.details[0].message });
+    }
 
     const tour = new Tour({
       ...req.body,
-      operator: req.auth.id
+      operator: req.auth?.id || 'Missing Auth ID',
     });
 
     await tour.save();
-    // Ensure you send the object properly as a JSON response
+
+    console.log('Tour saved:', tour);
+
     return res.status(201).json({ message: 'Tour created successfully', tour });
 
-
   } catch (err) {
+    console.error('Internal Server Error:', err);
     return res.status(500).json({ message: 'Server error: ' + err.message });
   }
 };
