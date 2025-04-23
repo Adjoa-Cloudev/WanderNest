@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt';
 import User from '../models/userModels.js';
 import jwt from 'jsonwebtoken';
-
 import { validateTouristRegistration, validateTourOperatorRegistration } from '../validators/userWanderNest.js';
+import { sendWelcomeEmail } from '../utils/mailing.js';
 
 const registerTourist = async (req, res) => {
   try {
@@ -11,14 +11,11 @@ const registerTourist = async (req, res) => {
 
     const { fullName, userName, email, phoneNumber, password, profilePicture } = req.body;
 
-
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).send('User already exists.');
 
- 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-   
     const user = new User({
       userType: 'tourist',
       fullName,
@@ -30,6 +27,13 @@ const registerTourist = async (req, res) => {
     });
 
     await user.save();
+
+    try {
+      await sendWelcomeEmail(email, fullName);
+    } catch (emailErr) {
+      console.error('Error sending welcome email:', emailErr.message);
+    }
+
     res.status(201).send('Tourist registered successfully!');
   } catch (err) {
     res.status(500).send('Error registering tourist: ' + err.message);
@@ -43,14 +47,11 @@ const registerTourOperator = async (req, res) => {
 
     const { businessName, location, servicesDescription, rateCard, userName, email, password, profilePicture } = req.body;
 
-    //  if the user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).send('User already exists.');
 
-  
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    
     const user = new User({
       userType: 'tour_operator',
       businessName,
@@ -64,6 +65,13 @@ const registerTourOperator = async (req, res) => {
     });
 
     await user.save();
+
+    try {
+      await sendWelcomeEmail(email, businessName);
+    } catch (emailErr) {
+      console.error('Error sending welcome email:', emailErr.message);
+    }
+
     res.status(201).send('Tour operator registered successfully!');
   } catch (err) {
     res.status(500).send('Error registering tour operator: ' + err.message);
@@ -74,15 +82,12 @@ const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Find user by email
     const user = await User.findOne({ email });
     if (!user) return res.status(400).send('Invalid email or password.');
 
-    // Compare passwords
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).send('Invalid email or password.');
 
-    // Generate token
     const token = jwt.sign(
       { id: user._id, userType: user.userType },
       process.env.JWT_SECRET,
@@ -103,6 +108,5 @@ const loginUser = async (req, res) => {
     res.status(500).send('Login error: ' + err.message);
   }
 };
-
 
 export { registerTourist, registerTourOperator, loginUser };

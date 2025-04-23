@@ -3,7 +3,7 @@ import { validateNewTour, validateUpdateTour } from '../validators/wanderNestapp
 
 export const createTour = async (req, res) => {
   try {
-    console.log('Auth Info:', req.auth);
+    console.log('Auth Info:', req.auth); 
     console.log('Incoming Body:', req.body);
     console.log('Uploaded File:', req.file);
 
@@ -27,9 +27,6 @@ export const createTour = async (req, res) => {
     });
 
     await tour.save();
-
-    console.log('Tour saved:', tour);
-
     return res.status(201).json({ message: 'Tour created successfully', tour });
 
   } catch (err) {
@@ -37,6 +34,7 @@ export const createTour = async (req, res) => {
     return res.status(500).json({ message: 'Server error: ' + err.message });
   }
 };
+
 
 export const updateTour = async (req, res) => {
   try {
@@ -55,7 +53,6 @@ export const updateTour = async (req, res) => {
     Object.assign(tour, req.body); 
     await tour.save();
 
-    
     return res.status(200).json({ message: 'Tour updated successfully', tour });
 
   } catch (err) {
@@ -73,11 +70,26 @@ export const getOperatorTours = async (req, res) => {
   }
 };
 
-// Get all tours (for tourists)
 export const getAllTours = async (req, res) => {
   try {
-    const tours = await Tour.find({ status: 'available' });
-    res.status(200).json(tours);
+    const { search } = req.query;
+
+    const tours = await Tour.find({ status: 'available' }).populate('operator', 'businessName');
+
+    let filteredTours = tours;
+
+    if (search) {
+      const regex = new RegExp(search, 'i'); // case-insensitive
+
+      filteredTours = tours.filter(tour =>
+        regex.test(tour.title) ||
+        regex.test(tour.location) ||
+        regex.test(tour.rateCard) ||
+        regex.test(tour.operator?.businessName)
+      );
+    }
+
+    res.status(200).json(filteredTours);
   } catch (err) {
     res.status(500).json({ message: 'Server error: ' + err.message });
   }
