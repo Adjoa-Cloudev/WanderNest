@@ -1,5 +1,5 @@
-import Tour from '../models/wanderNestApp.js';
-import { validateNewTour, validateUpdateTour } from '../validators/wanderNestapp.js';
+import { Tour, Review } from '../models/wanderNestApp.js';
+import { validateNewTour, validateUpdateTour, validateNewReview } from '../validators/wanderNestapp.js';
 
 export const createTour = async (req, res) => {
   try {
@@ -35,7 +35,6 @@ export const createTour = async (req, res) => {
   }
 };
 
-
 export const updateTour = async (req, res) => {
   try {
     const { id } = req.params;
@@ -60,7 +59,6 @@ export const updateTour = async (req, res) => {
   }
 };
 
-
 export const getOperatorTours = async (req, res) => {
   try {
     const tours = await Tour.find({ operator: req.auth.id });
@@ -79,7 +77,7 @@ export const getAllTours = async (req, res) => {
     let filteredTours = tours;
 
     if (search) {
-      const regex = new RegExp(search, 'i'); // case-insensitive
+      const regex = new RegExp(search, 'i'); 
 
       filteredTours = tours.filter(tour =>
         regex.test(tour.title) ||
@@ -94,3 +92,65 @@ export const getAllTours = async (req, res) => {
     res.status(500).json({ message: 'Server error: ' + err.message });
   }
 };
+
+// New Review Handling Logic
+
+export const createReview = async (req, res) => {
+  try {
+    const { error } = validateNewReview(req.body);
+    if (error) return res.status(400).json({ message: error.details[0].message });
+
+    const { operatorId } = req.params; 
+    const operator = await Tour.findOne({ operator: operatorId }); 
+    if (!operator) return res.status(404).json({ message: 'Operator not found' });
+
+    const review = new Review({
+      ...req.body,
+      operatorId, 
+      reviewedBy: req.auth.id,
+    });
+
+    await review.save();
+
+    res.status(201).json({ message: 'Review created successfully', review });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error: ' + err.message });
+  }
+};
+
+export const getOperatorReviews = async (req, res) => {
+  try {
+    const { operatorId } = req.params; // Fetching reviews for operator
+    const reviews = await Review.find({ operatorId }).populate('reviewedBy', 'fullName');
+    res.status(200).json(reviews);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error: ' + err.message });
+  }
+};
+
+export const deleteReview = async (req, res) => {
+  try {
+    const { operatorId, reviewId } = req.params;
+
+    const review = await Review.findOneAndDelete({ _id: reviewId, reviewedBy: req.auth.id, operatorId });
+    if (!review) return res.status(404).json({ message: 'Review not found or unauthorized' });
+
+    res.status(200).json({ message: 'Review deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error: ' + err.message });
+  }
+};
+export const getAllReviews = async (req, res) => {
+  try {
+    const reviews = await Review.find();
+
+    if (!reviews.length) {
+      return res.status(404).json({ message: 'No reviews found' });
+    }
+
+    res.status(200).json(reviews);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error: ' + err.message });
+  }
+};
+

@@ -22,8 +22,19 @@ export const validateUpdateTour = (data) => {
     description: Joi.string(),
     availableSlots: Joi.number(),
     date: Joi.date(),
-    images: Joi.string().uri(),  
+    image: Joi.string().uri(),
     status: Joi.string().valid('available', 'unavailable')
+  });
+  return schema.validate(data);
+};
+
+export const validateNewReview = (data) => {
+  const schema = Joi.object({
+    location: Joi.string().required(),
+    companion: Joi.string().required(),
+    title: Joi.string().required(),
+    description: Joi.string().required(),
+    rating: Joi.number().min(1).max(5).required()
   });
   return schema.validate(data);
 };

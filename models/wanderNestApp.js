@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 
+
 const tourSchema = new mongoose.Schema({
   operator: {
     type: mongoose.Schema.Types.ObjectId,
@@ -31,7 +32,7 @@ const tourSchema = new mongoose.Schema({
     required: true,
   },
   image: {
-    type: String, // single image URL
+    type: String,
     required: true,
   },
   status: {
@@ -42,4 +43,31 @@ const tourSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 const Tour = mongoose.model('Tour', tourSchema);
-export default Tour;
+
+
+
+const reviewSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  rating: {
+    type: Number,
+    required: true,
+    min: 1,
+    max: 5,
+  },
+  reviewedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User', 
+    required: true,
+  },
+  
+}, { timestamps: true });
+
+const Review = mongoose.model('Review', reviewSchema)
+export { Tour, Review }; 
