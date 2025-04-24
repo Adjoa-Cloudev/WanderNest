@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-
+import normalize from 'normalize-mongoose';
 
 const tourSchema = new mongoose.Schema({
   operator: {
@@ -42,9 +42,7 @@ const tourSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-const Tour = mongoose.model('Tour', tourSchema);
-
-
+tourSchema.plugin(normalize);
 
 const reviewSchema = new mongoose.Schema({
   title: {
@@ -66,8 +64,11 @@ const reviewSchema = new mongoose.Schema({
     ref: 'User', 
     required: true,
   },
-  
 }, { timestamps: true });
 
-const Review = mongoose.model('Review', reviewSchema)
-export { Tour, Review }; 
+reviewSchema.plugin(normalize);
+
+const Tour = mongoose.model('Tour', tourSchema);
+const Review = mongoose.model('Review', reviewSchema);
+
+export { Tour, Review };

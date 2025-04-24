@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import normalize from 'normalize-mongoose';
 
 const userSchema = new mongoose.Schema({
   userType: {
@@ -49,6 +50,8 @@ const userSchema = new mongoose.Schema({
     required: function () { return this.userType === 'tour_operator'; }
   }
 }, { timestamps: true });
+
+userSchema.plugin(normalize);
 
 const User = mongoose.model('User', userSchema);
 
