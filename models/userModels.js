@@ -51,8 +51,7 @@ const userSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-userSchema.plugin(normalize);
-
 const User = mongoose.model('User', userSchema);
 
+// userSchema.plugin(normalize);
 export default User;

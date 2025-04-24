@@ -42,7 +42,7 @@ const tourSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-tourSchema.plugin(normalize);
+// tourSchema.plugin(normalize);
 
 const reviewSchema = new mongoose.Schema({
   title: {
@@ -66,7 +66,7 @@ const reviewSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-reviewSchema.plugin(normalize);
+// reviewSchema.plugin(normalize);
 
 const Tour = mongoose.model('Tour', tourSchema);
 const Review = mongoose.model('Review', reviewSchema);
